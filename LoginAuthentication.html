@@ -1,0 +1,136 @@
+<html>
+
+<head>
+    <title> Login Authentication </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="task">
+        <img src="Images/girl1.png" class="img">
+        <span class="title">Lets Read</span>
+        <span class="title1">Page by page, book by book, no need to wait, just take a look</span>
+        <div class="form-box">
+        
+            <div class="button-box">
+                <div id="btn"></div>
+                <button class="toggle-btn" onclick="login()">Log In</button>
+                <button class="toggle-btn" onclick="register()">Register</button>
+            </div>
+
+            <div class="icons">
+                <img src="Images/fb1.png">
+                <img src="Images/tw1.png">
+                <img src="Images/gb1.png">
+            </div>
+
+            <form id="login" class="input">
+                <input type="text" id="emailid" class="input_field" placeholder="Email" required>
+                <input type="password" id="pw" class="input_field" placeholder="Enter Password" required>
+                <input type="checkbox" class="check-box"><span>Remember Password</span>
+                <button type="button" id="signIn" class="submit-btn">Log In</button>
+            </form>
+
+            <form id="register" class="input">
+                <input type="text" id="name" class="input_field" placeholder="Full Name" required>
+                <input type="text" id="userid" class="input_field" placeholder="User Id" required>
+                <input type="email" id="email" class="input_field" placeholder="Email" required>
+                <input type="password" id="pass" class="input_field" placeholder="Enter Password" required>
+                <button type="button" id="signUp" class="submit-btn1">Register</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        var a = document.getElementById('login');
+        var b = document.getElementById('register');
+        var c = document.getElementById('btn');
+
+        function register() {
+            a.style.left = "-400px";
+            b.style.left = "50px";
+            c.style.left = "110px";
+        }
+        function login() {
+            a.style.left = "50px";
+            b.style.left = "450px";
+            c.style.left = "0px";
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmlThY1ZQ-UCIhzIhmR8nMiDnMZLvvpgc",
+            authDomain: "loginauthentication-a6b9b.firebaseapp.com",
+            databaseURL: "https://loginauthentication-a6b9b-default-rtdb.firebaseio.com",
+            projectId: "loginauthentication-a6b9b",
+            storageBucket: "loginauthentication-a6b9b.appspot.com",
+            messagingSenderId: "166112913809",
+            appId: "1:166112913809:web:7647ce452e067e32d89230"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase(app);
+
+        signUp.addEventListener('click', (e) => {
+
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('pass').value;
+            var username = document.getElementById('userid').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+
+                    set(ref(database, 'users/' + user.uid), {
+                        username: username,
+                        email: email
+                    })
+
+                    alert('user created successfully!!!');
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    alert(errorMessage);
+                });
+        });
+
+
+        signIn.addEventListener('click', (e) => {
+
+            var email1 = document.getElementById('emailid').value;
+            var password1 = document.getElementById('pw').value;
+
+            signInWithEmailAndPassword(auth, email1, password1)
+                .then((userCredential) => {
+
+                    const user = userCredential.user;
+
+                    const dt = new Date();
+
+                    update(ref(database, 'users/' + user.uid), {
+                        last_login: dt,
+                    })
+
+                    alert('Login successful!!');
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    alert(errorMessage);
+
+                });
+        });
+    </script>
+
+</body>
+</html>
